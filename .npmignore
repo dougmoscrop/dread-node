@@ -1,0 +1,6 @@
+test/
+.nyc_output/
+coverage/
+.eslintrc
+.eslintignore
+.gitignore
