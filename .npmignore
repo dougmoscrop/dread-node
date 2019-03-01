@@ -1,6 +1,13 @@
 test/
 .nyc_output/
 coverage/
+docs/
+examples/
+.circleci/
+
+.gitignore
 .eslintrc
 .eslintignore
-.gitignore
+.editorconfig
+.npmignore
+.travis.yml
