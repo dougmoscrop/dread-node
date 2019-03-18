@@ -1,0 +1,18 @@
+{
+  "name": "dread",
+  "version": "1.0.0",
+  "description": "yet another retry library",
+  "main": "dread.js",
+  "scripts": {
+    "test": "nyc --all ava",
+    "posttest": "eslint ."
+  },
+  "author": "Doug Moscrop <doug.moscrop@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "ava": "^1.3.1",
+    "eslint": "^5.15.3",
+    "nyc": "^13.3.0",
+    "sinon": "^7.2.7"
+  }
+}
