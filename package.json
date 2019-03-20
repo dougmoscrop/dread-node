@@ -8,6 +8,14 @@
     "posttest": "eslint ."
   },
   "author": "Doug Moscrop <doug.moscrop@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dougmoscrop/dread-node.git"
+  },
+  "keywords": [
+    "retry",
+    "backoff"
+  ],
   "license": "MIT",
   "devDependencies": {
     "ava": "^1.3.1",
