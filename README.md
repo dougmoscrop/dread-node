@@ -74,10 +74,12 @@ dread.exp({
 
 ```js
 const retry = dread({ timeout: 10000 });
-// the operation will timeoUt after 10 seconds
+// the operation will timeout after 10 seconds
 retry(attempt => {
-    // the attempt will timeout after 1 second, inclusive of the backoff delay
+    // this attempt will timeout after 1 second, inclusive of the backoff delay
     attempt.timeout(5000);
+    // you could also set a timeout based on the attempt nuber
+    attempt.timeout(attempt.number * 2000);
 });
 ```
 
@@ -89,6 +91,7 @@ You can cancel an attempt manually by calling `attempt.cancel(reason)` optionall
 const retry = dread();
 
 retry(attempt => {
+    // will reject with new Error('Cancelled')
     attempt.cancel();
 });
 ```
