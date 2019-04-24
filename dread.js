@@ -32,7 +32,9 @@ const RETRY = Symbol();
 
 function shouldRetry(error, condition) {
     if (RETRY in error) {
-        return error[RETRY];
+        const retry = error[RETRY];
+        delete error[RETRY];
+        return retry;
     }
     return condition(error);
 }
