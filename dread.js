@@ -60,7 +60,7 @@ module.exports = function dread(options = {}) {
                 const err = reason instanceof Error
                     ? reason
                     : new Error(reason);
-    
+
                 abort(err);
             },
             timeout: duration => {
@@ -83,7 +83,7 @@ module.exports = function dread(options = {}) {
 
         for (;; number += 1) {
             const aborted = new Promise((_, reject) => abort = reject);
-
+			attempt.number = number;
             try {
                 result = await Promise.race([
                     task(attempt),

@@ -79,6 +79,22 @@ test('no retry', async t => {
     }
 });
 
+test('attempt.number updates', async t => {
+	const error = new Error('test');
+	error.retryable = true;
+
+	let actualAttempts = 1;
+	const retry = dread();
+	var attempts = await retry(async function(attempt) {
+		t.is(actualAttempts++, attempt.number);
+		if(attempt.number >= 5) {
+			return attempt.number;
+		}
+		throw error;
+	});
+	t.is(attempts, 5);
+});
+
 test('cancel', async t => {
     const retry = dread();
 
