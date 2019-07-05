@@ -1,4 +1,5 @@
 const assert = require('assert');
+const util = require('util');
 
 function prop(n) {
     return err => !!err[n];
@@ -12,20 +13,40 @@ function code(v) {
     return err => err.code === v;
 }
 
+const JitterType = Object.freeze({
+	NONE: 'none',// use full backoff
+	FULL: 'full',// random value between 0 and backoff
+	HALF: 'half',// random value between backoff/2 and backoff
+});
+
 function exp(options = {}) {
-    const { base = 100, factor = 2, limit = 10000, jitter = true } = options;
+	const { base = 100, factor = 2, limit = 10000} = options;
+	let { jitter = JitterType.FULL } = options;
 
     assert(Number.isInteger(base), 'base must be an integer');
     assert(Number.isInteger(factor), 'factor must be an integer');
-    assert(Number.isInteger(limit), 'limit must be an integer');
-    assert(typeof jitter === 'boolean', 'jitter must be an boolean');
+	assert(Number.isInteger(limit), 'limit must be an integer');
+	if (typeof jitter === 'boolean') {
+		jitter = jitter ? JitterType.FULL : JitterType.NONE;
+	}
+	assert(typeof jitter === typeof '', 'jitter must be string');
+	assert([JitterType.NONE, JitterType.FULL, JitterType.HALF].indexOf(jitter) >= 0, `invalid jitter value, use JitterType ${util.inspect(JitterType)}`);
 
-    const cap = limit || Number.MAX_SAFE_INTEGER;
-    const amount = number => Math.min(base * Math.pow(factor, number), cap);
+	const cap = limit || Number.MAX_SAFE_INTEGER;
+	const backoff = number => Math.min(base * Math.pow(factor, number), cap);
 
-    return jitter
-        ? number => Math.round(Math.random(base, amount(number)))
-        : number => Math.round(amount(number));
+	switch (jitter) {
+		case JitterType.FULL:
+			return number => Math.round(Math.random() * (backoff(number) ));
+		case JitterType.HALF:
+			return number => {
+				const halfBackoff = backoff(number) / 2;
+				return Math.round(halfBackoff + (Math.random() * halfBackoff));
+			}
+		case JitterType.NONE:
+		default:
+			return number => Math.round(backoff(number));// use full backoff
+	}
 }
 
 const RETRY = Symbol();
@@ -115,4 +136,4 @@ module.exports = function dread(options = {}) {
     };
 };
 
-Object.assign(module.exports, { prop, is, code, exp });
+Object.assign(module.exports, { prop, is, code, exp, JitterType });

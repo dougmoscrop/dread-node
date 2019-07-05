@@ -143,6 +143,64 @@ test('operation timeout before attempt timeout', async t => {
     }
 });
 
+test('dread.exp no jitter', t => {
+	let exp = dread.exp({ factor: 1, jitter: dread.JitterType.NONE });
+	t.is(exp(1), 100);
+	t.is(exp(2), 100);
+	t.is(exp(3), 100);
+
+	exp = dread.exp({ factor: 2, jitter: dread.JitterType.NONE });
+	t.is(exp(1), 200);
+	t.is(exp(2), 400);
+	t.is(exp(3), 800);
+
+    exp = dread.exp({ factor: 3, jitter: dread.JitterType.NONE });
+	t.is(exp(1), 300);
+	t.is(exp(2), 900);
+	t.is(exp(3), 2700);
+});
+
+test('dread.exp capped at limit', t => {
+	const exp = dread.exp({ factor: 3, jitter: dread.JitterType.NONE, limit : 1234 });
+	t.is(exp(1), 300);
+	t.is(exp(2), 900);
+	t.is(exp(3), 1234);
+});
+
+function between(t, result, min, max) {
+	t.truthy(result >= min);
+	t.truthy(result <= max);
+}
+
+test('dread.exp jitter', t => {
+	let exp = dread.exp({ factor: 3, jitter: dread.JitterType.FULL });
+	for (let x = 0; x < 10; x++) {
+		between(t, exp(1), 0, 300);
+		between(t, exp(2), 0, 900);
+		between(t, exp(3), 0, 2700);
+	}
+	exp = dread.exp({ factor: 3, jitter: dread.JitterType.HALF });
+	for (let x = 0; x < 10; x++) {
+		between(t, exp(1), 150, 300);
+		between(t, exp(2), 450, 900);
+		between(t, exp(3), 1350, 2700);
+	}
+});
+
+test('dread.exp jitter backwards compatible with bool', t => {
+	let exp = dread.exp({ factor: 3, jitter: true });
+	for (let x = 0; x < 10; x++) {
+		between(t, exp(1), 0, 300);
+		between(t, exp(2), 0, 900);
+		between(t, exp(3), 0, 2700);
+	}
+
+	exp = dread.exp({ factor: 3, jitter: false });
+	t.is(exp(1), 300);
+	t.is(exp(2), 900);
+	t.is(exp(3), 2700);
+});
+
 test('prop', t => {
     t.is(dread.prop('foo')({ foo: true }), true);
     t.is(dread.prop('foo')({ foo: false }), false);
@@ -160,3 +218,4 @@ test('is', t => {
     t.is(dread.is(Foo)(new Foo), true);
     t.is(dread.is(Bar)(new Foo), false);
 });
+
