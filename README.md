@@ -60,13 +60,18 @@ You can provide any function you want, including async. The `Error` is provided 
 
 ```js
 // this is the default - a fully randomized, truncated exponential value
-dread.exp({ 
+dread.exp({
     base: Number(100),
     factor: Number(2),
     limit: Number(10000),
-    jitter: Boolean(true)
+    jitter: JitterType.FULL
 });
 ```
+`jitter` may be one of:
+
+- `JitterType.NONE` the full backoff value is used
+- `JitterType.FULL` a randomized value between 0 and the full backoff
+- `JitterType.HALF` a randomized valued between full backoff / 2 and full backoff
 
 ### timeout
 
