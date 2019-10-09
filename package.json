@@ -4,7 +4,8 @@
   "description": "yet another retry library",
   "main": "dread.js",
   "scripts": {
-    "test": "nyc --all ava",
+    "test": "nyc --all ava test/spec.js",
+    "perf": "ava test/perf.js",
     "posttest": "eslint ."
   },
   "author": "Doug Moscrop <doug.moscrop@gmail.com>",
