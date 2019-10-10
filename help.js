@@ -12,6 +12,10 @@ function code(v) {
   return err => err.code === v;
 }
 
+function always() {
+  return () => true;
+}
+
 const RETRY = Symbol();
 
-module.exports = { prop, is, code, RETRY };
+module.exports = { prop, is, code, always, RETRY };

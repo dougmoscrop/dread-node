@@ -273,7 +273,16 @@ test('is', t => {
   t.is(dread.is(Bar)(new Foo), false);
 });
 
-test('dead.exp throws when jitter is invalid', t => {
+test('dread.exp throws when jitter is invalid', t => {
   const err = t.throws(() => dread.exp({ factor: 3, jitter: 'invalid' }));
   t.is(err.message, 'invalid jitter value, use JitterType NONE,FULL,HALF');
+});
+
+test('dread.always returns true', t => {
+  const always = dread.always();
+
+  t.is(always(), true);
+  t.is(always(false), true);
+  t.is(always(new Error()), true);
+  t.is(always(null), true);
 });

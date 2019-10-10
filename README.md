@@ -49,6 +49,7 @@ You can provide any function you want, including async.
 - `dread.prop(name)` rery if `err.prop` is truthy
 - `dread.code(String)` retry if `err.code === String`
 - `dread.is(Class)` retry if `err instanceof Class`
+- `dread.always()` always retry
 
 ### backoff
 

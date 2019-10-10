@@ -3,7 +3,7 @@
 const assert = require('assert');
 
 const { exp, JitterType } = require('./backoff');
-const { prop, is, code, RETRY } = require('./help');
+const { prop, is, code, always, RETRY } = require('./help');
 
 module.exports = function dread(options = {}) {
   const { attempts = 10, condition = prop('retryable'), backoff = exp(), timeout = 0 } = options;
@@ -86,4 +86,4 @@ module.exports = function dread(options = {}) {
   };
 };
 
-Object.assign(module.exports, { prop, is, code, exp, JitterType });
+Object.assign(module.exports, { prop, is, code, exp, always, JitterType });
