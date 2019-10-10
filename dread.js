@@ -29,6 +29,9 @@ module.exports = function dread(options = {}) {
     }
 
     const attempt = {
+      get attempt() {
+        return number;
+      },
       get number() {
         return number;
       },

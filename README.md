@@ -15,6 +15,12 @@ retry(attempt => {
     console.log('attempt number', attempt.number);
     // do stuff
 });
+
+// can also use destructuring with the 'attempt' alias for attempt.number, just for short form
+retry(({ attempt, cancel }) => {
+   // attempt in this case is 1 because it's destructured attempt.attempt
+  logger.info({ attempt });
+});
 ```
 
 ## Options

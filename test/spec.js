@@ -295,3 +295,14 @@ test('sync tasks work fine', async t => {
 
   t.is(result, 'foo');
 });
+
+test('providers attempt number as "attempt" property to task', async t => {
+  let actual;
+
+  const retry = dread();
+  await retry(({ attempt }) => {
+    actual = attempt;
+  });
+
+  t.is(actual, 1);
+});
