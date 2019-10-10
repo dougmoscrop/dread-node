@@ -1,21 +1,23 @@
 'use strict';
 
-function prop(n) {
-  return err => !!err[n];
-}
+const assert = require('assert');
 
-function is(t) {
-  return err => err instanceof t;
-}
+function configure(options, defaults) {
+  const {
+    attempts = defaults.attempts,
+    backoff = defaults.backoff,
+    condition = defaults.condition,
+    timeout = defaults.timeout,
+  } = options;
 
-function code(v) {
-  return err => err.code === v;
-}
+  assert(Number.isInteger(attempts) && attempts > 0, 'attempts must be an integer > 0');
+  assert(typeof backoff === 'function', 'backoff must be a function');
+  assert(typeof condition === 'function', 'condition must be a function')
+  assert(Number.isInteger(timeout), 'timeout nust be a number');
 
-function always() {
-  return () => true;
+  return { attempts, backoff, condition, timeout };
 }
 
 const RETRY = Symbol();
 
-module.exports = { prop, is, code, always, RETRY };
+module.exports = { configure, RETRY };

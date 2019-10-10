@@ -178,19 +178,6 @@ test('cancel after result has no effect', async t => {
   t.is(spy.called, true);
 });
 
-test('cancel throws if reason is not a string', async t => {
-  const retry = dread({ attempts: 1 });
-
-  try {
-    await retry(attempt => {
-      attempt.cancel(1);
-    });
-    t.fail('should not reach here');
-  } catch (err) {
-    t.is(err.message, 'reason must be a string');
-  }
-});
-
 test('dread.exp with 0 limit caps to MAX_SAFE_INTEGER', t => {
   let exp = dread.exp({ factor: 9001, jitter: dread.JitterType.NONE, limit: 0 });
 
@@ -296,7 +283,7 @@ test('sync tasks work fine', async t => {
   t.is(result, 'foo');
 });
 
-test('providers attempt number as "attempt" property to task', async t => {
+test('provides attempt number as "attempt" property to task', async t => {
   let actual;
 
   const retry = dread();
@@ -305,4 +292,36 @@ test('providers attempt number as "attempt" property to task', async t => {
   });
 
   t.is(actual, 1);
+});
+
+test('can override options per task', async t => {
+  const retry = dread({ condition: dread.always(), attempts: 5 });
+  const task = sinon.stub().throws(new Error('testing'));
+
+  try {
+    await retry({ attempts: 3 }, task);
+    t.fail('should not reach here');
+  } catch (err) {
+    t.is(err.message, 'testing');
+    t.is(task.callCount, 3);
+  }
+});
+
+test('cancel can use custom error entity', async t => {
+  class CustomError extends Error {
+    constructor() {
+      super('custom');
+    }
+  }
+
+  const retry = dread({ attempts: 1 });
+
+  try {
+    await retry(attempt => {
+      attempt.cancel(new CustomError());
+    });
+    t.fail('should not reach here');
+  } catch (err) {
+    t.is(err instanceof CustomError, true);
+  }
 });

@@ -1,19 +1,25 @@
 'use strict';
 
-const assert = require('assert');
-
 const { exp, JitterType } = require('./backoff');
-const { prop, is, code, always, RETRY } = require('./help');
+const { prop, is, code, always } = require('./condition');
+const { configure, RETRY } = require('./help');
+
+const defaults = {
+  attempts: 10,
+  condition: prop('retryable'),
+  backoff: exp(),
+  timeout: 0,
+};
 
 module.exports = function dread(options = {}) {
-  const { attempts = 10, condition = prop('retryable'), backoff = exp(), timeout = 0 } = options;
+  const base = configure(options, defaults);
 
-  assert(Number.isInteger(attempts) && attempts > 0, 'attempts must be an integer > 0');
-  assert(typeof condition === 'function', 'condition must be a function')
-  assert(typeof backoff === 'function', 'backoff must be a function');
-  assert(Number.isInteger(timeout), 'timeout nust be a number');
+  return async (taskOrOverrides, taskOrNothing) => {
+    const task = taskOrNothing || taskOrOverrides;
+    const config = taskOrNothing ? configure(taskOrOverrides, base) : base;
 
-  return async task => {
+    const { attempts, backoff, condition, timeout} = config;
+
     let number = 1, result, control, operationHandle, attemptHandle, delayHandle;
 
     function abort(reason, retry = true) {
@@ -21,8 +27,9 @@ module.exports = function dread(options = {}) {
         return;
       }
 
-      assert(typeof reason === 'string', 'reason must be a string');
-      const error = new Error(reason);
+      const error = typeof reason === 'string'
+        ? new Error(reason)
+        : reason;
 
       error[RETRY] = retry;
       control(error);
