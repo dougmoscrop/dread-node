@@ -286,3 +286,12 @@ test('dread.always returns true', t => {
   t.is(always(new Error()), true);
   t.is(always(null), true);
 });
+
+test('sync tasks work fine', async t => {
+  const task = sinon.stub().throws(new Error('test')).onThirdCall().returns('foo');
+
+  const retry = dread({ condition: dread.always() });
+  const result = await retry(task);
+
+  t.is(result, 'foo');
+});
