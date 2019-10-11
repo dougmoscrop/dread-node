@@ -21,7 +21,7 @@ function backoff(number, base, factor, cap) {
 }
 
 function exp(options = {}) {
-  const { base = 100, factor = 2, limit = 10000} = options;
+  const { base = 100, factor = 2, limit = 10000 } = options;
 
   assert(Number.isInteger(base), 'base must be an integer');
   assert(Number.isInteger(factor), 'factor must be an integer');

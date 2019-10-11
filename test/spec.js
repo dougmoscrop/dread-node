@@ -325,3 +325,55 @@ test('cancel can use custom error entity', async t => {
     t.is(err instanceof CustomError, true);
   }
 });
+
+test('can take a function as first argument (simple use case)', async t => {
+  const error = new Error('fail');
+  error.retryable = true;
+
+  const stub = sinon.stub().throws(error).onThirdCall().returns('test');
+  const result = await dread(stub);
+
+  t.is(result, 'test');
+  t.is(stub.callCount, 3);
+});
+
+test('can take a function as second argument (simple use case)', async t => {
+  const error = new Error('fail');
+  const stub = sinon.stub().throws(error).onThirdCall().returns('test');
+  const result = await dread({ condition: dread.always() }, stub);
+
+  t.is(result, 'test');
+  t.is(stub.callCount, 3);
+});
+
+test('can swap function/config order', async t => {
+  const error = new Error('fail');
+  const stub = sinon.stub().throws(error).onThirdCall().returns('test');
+  const result = await dread(stub, { condition: dread.always() });
+
+  t.is(result, 'test');
+  t.is(stub.callCount, 3);
+});
+
+test('throws if both attempts and retries are provided', async t => {
+  const err = t.throws(() => dread({ attempts: 2, retries: 1 }));
+  t.is(err.message, 'Specify attempts or retries, but not both');
+});
+
+test('can specify retries', async t => {
+  const stub = sinon.stub().throws(new Error('testing'));
+  const err = await t.throwsAsync(() => dread({ condition: dread.always(), retries: 2 }, stub));
+
+  t.is(err.message, 'testing');
+  t.is(stub.callCount, 3);
+});
+
+test('can override retries', async t => {
+  const stub = sinon.stub().throws(new Error('testing'));
+  const retry = dread({ condition: dread.always(), attempts: 5 });
+
+  const err = await t.throwsAsync(() => retry({ retries: 2 }, stub));
+
+  t.is(err.message, 'testing');
+  t.is(stub.callCount, 3);
+});
