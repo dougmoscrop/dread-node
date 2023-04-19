@@ -15,7 +15,7 @@ export type DreadConfig = {
   timeout?: number = undefined;
   attempts: number = 10;
   backoff?: number;
-  condition?: (err: any) => boolean;
+  condition?: boolean | ((err: any) => boolean);
 };
 
 export type Attempt = {
