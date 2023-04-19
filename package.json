@@ -1,6 +1,6 @@
 {
   "name": "dread",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "yet another retry library",
   "main": "dread.js",
   "types": "dread.d.ts",
