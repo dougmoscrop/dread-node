@@ -26,7 +26,10 @@ export type Attempt = {
 };
 
 type DreadFunction = {
-  (task: (attempt: Attempt) => any | Promise<any>, config?: DreadConfig): void;
+  (
+    task: (attempt: Attempt) => void | any | Promise<any>,
+    config?: DreadConfig
+  ): void;
   (config?: DreadConfig): DreadFunction;
   prop: (key: string) => boolean;
   is: (classInstance: any) => boolean;
