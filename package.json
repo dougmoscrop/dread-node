@@ -1,8 +1,9 @@
 {
   "name": "dread",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "yet another retry library",
   "main": "dread.js",
+  "types": "dread.d.ts",
   "scripts": {
     "test": "nyc --all ava test/spec.js",
     "perf": "ava test/perf.js",
